@@ -35,7 +35,7 @@ export default async function HistoryPage() {
                     Week of {formatDate(plan.weekStart)}
                   </h2>
                   <span className="text-sm text-slate-500">
-                    Exercise {Math.round(rates.exercise * 100)}% · Diet{" "}
+                    Exercise {Math.round(rates.exercise * 100)}% · Meals{" "}
                     {Math.round(rates.diet * 100)}%
                   </span>
                 </div>

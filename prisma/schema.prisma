@@ -55,8 +55,12 @@ model PlanDay {
   dayIndex       Int
   exerciseTitle  String
   exerciseDetail String
-  dietTitle      String
-  dietDetail     String
+  breakfastTitle  String
+  breakfastDetail String
+  lunchTitle      String
+  lunchDetail     String
+  dinnerTitle     String
+  dinnerDetail    String
 
   plan    WeeklyPlan @relation(fields: [planId], references: [id], onDelete: Cascade)
   checkIn CheckIn?
@@ -67,8 +71,10 @@ model PlanDay {
 model CheckIn {
   id           String   @id @default(cuid())
   planDayId    String   @unique
-  exerciseDone Boolean  @default(false)
-  dietDone     Boolean  @default(false)
+  exerciseDone  Boolean @default(false)
+  breakfastDone Boolean @default(false)
+  lunchDone     Boolean @default(false)
+  dinnerDone    Boolean @default(false)
   note         String   @default("")
   updatedAt    DateTime @updatedAt
 

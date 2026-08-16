@@ -6,9 +6,16 @@ export type PlanDayDraft = {
   dayIndex: number;
   exerciseTitle: string;
   exerciseDetail: string;
-  dietTitle: string;
-  dietDetail: string;
+  breakfastTitle: string;
+  breakfastDetail: string;
+  lunchTitle: string;
+  lunchDetail: string;
+  dinnerTitle: string;
+  dinnerDetail: string;
 };
+
+export const MEALS = ["breakfast", "lunch", "dinner"] as const;
+export type Meal = (typeof MEALS)[number];
 
 export type PlanDraft = {
   summary: string;
@@ -76,14 +83,48 @@ const EXERCISE_TEMPLATES: Record<
   ],
 };
 
-const DIET_TEMPLATES: Array<[string, string]> = [
-  ["Protein-forward reset", "3 meals with 25-35 g protein each, 2 fist-sized servings of vegetables at lunch and dinner, 2 L water."],
-  ["Fibre focus", "Add beans or lentils to one meal, whole grains instead of refined, one piece of fruit as a snack."],
-  ["Healthy fats", "Include fish, olive oil, nuts, or avocado; keep added sugar under 25 g."],
-  ["Balanced plate", "Half plate vegetables, quarter protein, quarter whole-grain carbs at lunch and dinner."],
-  ["Low-processed day", "Home-cooked meals only, no sugary drinks, salt under 5 g."],
-  ["Flexible day", "Balanced plate plus one planned treat you actually enjoy."],
-  ["Prep day", "Batch-cook protein and vegetables for the next 3 days; plan the grocery list."],
+type MealTemplate = {
+  breakfast: [string, string];
+  lunch: [string, string];
+  dinner: [string, string];
+};
+
+const DIET_TEMPLATES: MealTemplate[] = [
+  {
+    breakfast: ["Protein oats", "Oats with milk or soy milk, a scoop of yoghurt, berries and a spoon of nut butter. Aim for 25-30 g protein."],
+    lunch: ["Grain bowl", "Whole grains, a palm of chicken, tofu or fish, and two fistfuls of vegetables with olive oil."],
+    dinner: ["Fish and greens", "Baked fish or lentils, roasted vegetables, small portion of potato or rice. Stop eating 2 h before bed."],
+  },
+  {
+    breakfast: ["Eggs and greens", "Two eggs or a tofu scramble with spinach and a slice of wholegrain bread."],
+    lunch: ["Bean salad", "Beans or lentils, mixed leaves, tomato, cucumber, feta or seeds, olive-oil dressing."],
+    dinner: ["Stir-fry", "Lean protein with plenty of mixed vegetables and brown rice; go easy on the sauce."],
+  },
+  {
+    breakfast: ["Yoghurt and fruit", "Greek yoghurt, a piece of fruit and a small handful of nuts."],
+    lunch: ["Soup and sandwich", "Vegetable soup plus a wholegrain sandwich with a protein filling."],
+    dinner: ["Chicken and vegetables", "Palm of chicken or a plant protein, half a plate of vegetables, quarter plate of whole grains."],
+  },
+  {
+    breakfast: ["Smoothie", "Milk or soy milk, banana, berries, oats and a protein source; drink alongside a glass of water."],
+    lunch: ["Leftovers, balanced", "Yesterday's dinner plus an extra serving of salad or vegetables."],
+    dinner: ["Lentil stew", "Lentil or bean stew with vegetables and a small serving of wholegrain bread."],
+  },
+  {
+    breakfast: ["Wholegrain toast", "Wholegrain toast with avocado or cottage cheese and a piece of fruit."],
+    lunch: ["Salad with protein", "Big mixed salad with eggs, tuna, chickpeas or chicken and an olive-oil dressing."],
+    dinner: ["Home-cooked plate", "Home-cooked meal, no sugary drinks, salt under 5 g for the day."],
+  },
+  {
+    breakfast: ["Relaxed breakfast", "Whatever you enjoy, but include a protein source and a piece of fruit."],
+    lunch: ["Balanced plate", "Half vegetables, quarter protein, quarter whole-grain carbs."],
+    dinner: ["Planned treat", "Balanced dinner plus one planned treat you actually enjoy, eaten slowly."],
+  },
+  {
+    breakfast: ["Simple start", "Eggs or yoghurt with fruit while you plan the week's shopping."],
+    lunch: ["Prep-and-eat", "Eat a balanced plate from what you batch-cook today."],
+    dinner: ["Batch-cook", "Cook protein and vegetables for the next 3 days; portion them out tonight."],
+  },
 ];
 
 export function ruleBasedPlan(
@@ -107,15 +148,21 @@ export function ruleBasedPlan(
       dayIndex,
       exerciseTitle: exercises[dayIndex][0],
       exerciseDetail: exercises[dayIndex][1],
-      dietTitle: DIET_TEMPLATES[dayIndex][0],
-      dietDetail: DIET_TEMPLATES[dayIndex][1],
+      breakfastTitle: DIET_TEMPLATES[dayIndex].breakfast[0],
+      breakfastDetail: DIET_TEMPLATES[dayIndex].breakfast[1],
+      lunchTitle: DIET_TEMPLATES[dayIndex].lunch[0],
+      lunchDetail: DIET_TEMPLATES[dayIndex].lunch[1],
+      dinnerTitle: DIET_TEMPLATES[dayIndex].dinner[0],
+      dinnerDetail: DIET_TEMPLATES[dayIndex].dinner[1],
     })),
   };
 }
 
 const SYSTEM_PROMPT = `You are a cautious, evidence-based health coach who writes weekly exercise and diet plans.
-Return strict JSON: {"summary": string, "focus": string, "days": [{"dayIndex": 0-6, "exerciseTitle": string, "exerciseDetail": string, "dietTitle": string, "dietDetail": string}]}.
-Include exactly 7 days, dayIndex 0 = Monday through 6 = Sunday. Titles under 40 characters, details 1-2 sentences and concrete (sets, reps, durations, portions).
+Return strict JSON: {"summary": string, "focus": string, "days": [{"dayIndex": 0-6, "exerciseTitle": string, "exerciseDetail": string, "breakfastTitle": string, "breakfastDetail": string, "lunchTitle": string, "lunchDetail": string, "dinnerTitle": string, "dinnerDetail": string}]}.
+Include exactly 7 days, dayIndex 0 = Monday through 6 = Sunday. Every day must have all three meals: breakfast, lunch and dinner.
+Titles under 40 characters and name the dish. Details 1-2 sentences and concrete (sets, reps, durations, foods, portions).
+Vary the meals across the week and keep them realistic to cook.
 Respect the user's stated medical conditions, scale intensity to their current habits and age, and include at least one rest or recovery day.
 Never diagnose, never prescribe medication, and add safety caveats inside the detail text when relevant.`;
 
@@ -154,8 +201,11 @@ function isValidDraft(value: unknown): value is Omit<PlanDraft, "generatedBy"> {
       day.dayIndex <= 6 &&
       typeof day.exerciseTitle === "string" &&
       typeof day.exerciseDetail === "string" &&
-      typeof day.dietTitle === "string" &&
-      typeof day.dietDetail === "string",
+      MEALS.every(
+        (meal) =>
+          typeof day[`${meal}Title`] === "string" &&
+          typeof day[`${meal}Detail`] === "string",
+      ),
   );
 }
 

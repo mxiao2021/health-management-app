@@ -3,7 +3,8 @@ import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/session";
 import { ensurePlan } from "@/lib/service";
 import { adherence } from "@/lib/review";
-import { DAY_NAMES, dayIndexOf, formatDate, isSunday, weekStart } from "@/lib/week";
+import { dayIndexOf, formatDate, isSunday, weekStart } from "@/lib/week";
+import { toDayCardData } from "@/lib/dayCard";
 import DayCard from "@/components/DayCard";
 import ReviewPanel from "@/components/ReviewPanel";
 
@@ -43,7 +44,7 @@ export default async function DashboardPage() {
             </dd>
           </div>
           <div>
-            <dt className="text-slate-500">Diet followed</dt>
+            <dt className="text-slate-500">Meals followed</dt>
             <dd className="text-lg font-semibold text-slate-900">
               {Math.round(rates.diet * 100)}%
             </dd>
@@ -56,18 +57,7 @@ export default async function DashboardPage() {
           <DayCard
             key={day.id}
             isToday={day.dayIndex === today}
-            day={{
-              id: day.id,
-              dayName: DAY_NAMES[day.dayIndex],
-              date: formatDate(day.date),
-              exerciseTitle: day.exerciseTitle,
-              exerciseDetail: day.exerciseDetail,
-              dietTitle: day.dietTitle,
-              dietDetail: day.dietDetail,
-              exerciseDone: day.checkIn?.exerciseDone ?? false,
-              dietDone: day.checkIn?.dietDone ?? false,
-              note: day.checkIn?.note ?? "",
-            }}
+            day={toDayCardData(day)}
           />
         ))}
       </section>

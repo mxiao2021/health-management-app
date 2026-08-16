@@ -3,16 +3,22 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 
+export type MealKey = "breakfast" | "lunch" | "dinner";
+
 export type DayCardData = {
   id: string;
   dayName: string;
   date: string;
   exerciseTitle: string;
   exerciseDetail: string;
-  dietTitle: string;
-  dietDetail: string;
   exerciseDone: boolean;
-  dietDone: boolean;
+  meals: Array<{
+    key: MealKey;
+    label: string;
+    title: string;
+    detail: string;
+    done: boolean;
+  }>;
   note: string;
 };
 
@@ -27,13 +33,20 @@ export default function DayCard({
 }) {
   const router = useRouter();
   const [exerciseDone, setExerciseDone] = useState(day.exerciseDone);
-  const [dietDone, setDietDone] = useState(day.dietDone);
+  const [meals, setMeals] = useState(() =>
+    Object.fromEntries(day.meals.map((meal) => [meal.key, meal.done])) as Record<
+      MealKey,
+      boolean
+    >,
+  );
   const [note, setNote] = useState(day.note);
   const [, startTransition] = useTransition();
 
   async function save(updates: {
     exerciseDone?: boolean;
-    dietDone?: boolean;
+    breakfastDone?: boolean;
+    lunchDone?: boolean;
+    dinnerDone?: boolean;
     note?: string;
   }) {
     await fetch("/api/checkin", {
@@ -82,24 +95,29 @@ export default function DayCard({
           </label>
         </div>
 
-        <div>
-          <p className="font-medium text-slate-800">Diet · {day.dietTitle}</p>
-          <p className="text-slate-600">{day.dietDetail}</p>
-          <label className="mt-1 inline-flex items-center gap-2 text-slate-700">
-            <input
-              type="checkbox"
-              aria-label={`${day.dayName} diet complete`}
-              checked={dietDone}
-              disabled={readOnly}
-              onChange={(e) => {
-                setDietDone(e.target.checked);
-                void save({ dietDone: e.target.checked });
-              }}
-              className="h-4 w-4"
-            />
-            Followed
-          </label>
-        </div>
+        {day.meals.map((meal) => (
+          <div key={meal.key}>
+            <p className="font-medium text-slate-800">
+              {meal.label} · {meal.title}
+            </p>
+            <p className="text-slate-600">{meal.detail}</p>
+            <label className="mt-1 inline-flex items-center gap-2 text-slate-700">
+              <input
+                type="checkbox"
+                aria-label={`${day.dayName} ${meal.label.toLowerCase()} complete`}
+                checked={meals[meal.key]}
+                disabled={readOnly}
+                onChange={(e) => {
+                  const done = e.target.checked;
+                  setMeals((prev) => ({ ...prev, [meal.key]: done }));
+                  void save({ [`${meal.key}Done`]: done });
+                }}
+                className="h-4 w-4"
+              />
+              Followed
+            </label>
+          </div>
+        ))}
 
         {readOnly ? (
           note ? <p className="text-slate-500">Note: {note}</p> : null

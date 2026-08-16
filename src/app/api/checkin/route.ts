@@ -6,7 +6,9 @@ import { getCurrentUser } from "@/lib/session";
 const schema = z.object({
   planDayId: z.string().min(1),
   exerciseDone: z.boolean().optional(),
-  dietDone: z.boolean().optional(),
+  breakfastDone: z.boolean().optional(),
+  lunchDone: z.boolean().optional(),
+  dinnerDone: z.boolean().optional(),
   note: z.string().max(500).optional(),
 });
 
@@ -36,7 +38,9 @@ export async function POST(request: Request) {
 
   return NextResponse.json({
     exerciseDone: checkIn.exerciseDone,
-    dietDone: checkIn.dietDone,
+    breakfastDone: checkIn.breakfastDone,
+    lunchDone: checkIn.lunchDone,
+    dinnerDone: checkIn.dinnerDone,
     note: checkIn.note,
   });
 }

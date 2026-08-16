@@ -4,7 +4,8 @@ import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/session";
 import { getPlan } from "@/lib/service";
 import { adherence } from "@/lib/review";
-import { DAY_NAMES, formatDate, weekStart } from "@/lib/week";
+import { formatDate, weekStart } from "@/lib/week";
+import { toDayCardData } from "@/lib/dayCard";
 import DayCard from "@/components/DayCard";
 
 export const dynamic = "force-dynamic";
@@ -42,7 +43,7 @@ export default async function WeekDetailPage({
         </h1>
         <p className="mt-2 text-slate-600">{plan.summary}</p>
         <p className="mt-1 text-sm text-slate-500">
-          Exercise {Math.round(rates.exercise * 100)}% · Diet{" "}
+          Exercise {Math.round(rates.exercise * 100)}% · Meals{" "}
           {Math.round(rates.diet * 100)}%
         </p>
       </div>
@@ -63,18 +64,7 @@ export default async function WeekDetailPage({
           <DayCard
             key={day.id}
             readOnly={!isCurrentWeek}
-            day={{
-              id: day.id,
-              dayName: DAY_NAMES[day.dayIndex],
-              date: formatDate(day.date),
-              exerciseTitle: day.exerciseTitle,
-              exerciseDetail: day.exerciseDetail,
-              dietTitle: day.dietTitle,
-              dietDetail: day.dietDetail,
-              exerciseDone: day.checkIn?.exerciseDone ?? false,
-              dietDone: day.checkIn?.dietDone ?? false,
-              note: day.checkIn?.note ?? "",
-            }}
+            day={toDayCardData(day)}
           />
         ))}
       </section>
