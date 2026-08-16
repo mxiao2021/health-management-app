@@ -39,3 +39,13 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+!.env.example
+
+# prisma
+/prisma/*.db
+/prisma/*.db-journal
+
+# next.js agent rules
+AGENTS.md
+CLAUDE.md
