@@ -22,7 +22,7 @@ export default async function RootLayout({
       <body className={`${geistSans.variable} antialiased`}>
         <header className="border-b border-slate-200 bg-white">
           <nav className="mx-auto flex max-w-4xl items-center gap-4 px-4 py-3 text-sm">
-            <Link href="/" className="font-semibold text-emerald-700">
+            <Link href="/" className="font-semibold text-violet-700">
               Health Coach
             </Link>
             {user ? (

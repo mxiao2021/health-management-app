@@ -28,7 +28,7 @@ export default async function HistoryPage() {
             <li key={plan.id}>
               <Link
                 href={`/history/${formatDate(plan.weekStart)}`}
-                className="block rounded-xl border border-slate-200 bg-white p-4 shadow-sm hover:border-emerald-400"
+                className="block rounded-xl border border-slate-200 bg-white p-4 shadow-sm hover:border-violet-400"
               >
                 <div className="flex flex-wrap items-baseline justify-between gap-2">
                   <h2 className="font-semibold text-slate-900">
@@ -41,7 +41,7 @@ export default async function HistoryPage() {
                 </div>
                 <p className="mt-1 text-sm text-slate-600">{plan.summary}</p>
                 {review ? (
-                  <p className="mt-1 text-sm text-emerald-700">Reviewed</p>
+                  <p className="mt-1 text-sm text-violet-700">Reviewed</p>
                 ) : null}
               </Link>
             </li>

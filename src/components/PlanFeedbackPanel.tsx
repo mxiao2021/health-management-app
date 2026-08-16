@@ -67,7 +67,7 @@ export default function PlanFeedbackPanel({
         maxLength={1000}
         disabled={busy}
         placeholder="What should be different this week?"
-        className="mt-4 w-full rounded-md border border-slate-300 p-3 text-sm text-slate-900 placeholder:text-slate-400 focus:border-emerald-500 focus:outline-none disabled:opacity-60"
+        className="mt-4 w-full rounded-md border border-slate-300 p-3 text-sm text-slate-900 placeholder:text-slate-400 focus:border-violet-500 focus:outline-none disabled:opacity-60"
       />
 
       <div className="mt-3 flex flex-wrap gap-3">
@@ -75,7 +75,7 @@ export default function PlanFeedbackPanel({
           type="button"
           onClick={() => submit("feedback")}
           disabled={busy || message.trim().length === 0}
-          className="rounded-md bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-500 disabled:opacity-60"
+          className="rounded-md bg-violet-600 px-4 py-2 text-sm font-medium text-white hover:bg-violet-500 disabled:opacity-60"
         >
           {pending === "feedback" ? "Rebuilding your week…" : "Regenerate plan with my notes"}
         </button>

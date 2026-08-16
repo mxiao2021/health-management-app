@@ -60,14 +60,14 @@ export default function DayCard({
   return (
     <article
       className={`rounded-xl border bg-white p-4 shadow-sm ${
-        isToday ? "border-emerald-500 ring-1 ring-emerald-200" : "border-slate-200"
+        isToday ? "border-violet-500 ring-1 ring-violet-200" : "border-slate-200"
       }`}
     >
       <header className="flex items-baseline justify-between">
         <h3 className="font-semibold text-slate-900">
           {day.dayName}
           {isToday ? (
-            <span className="ml-2 rounded bg-emerald-100 px-2 py-0.5 text-xs font-medium text-emerald-700">
+            <span className="ml-2 rounded bg-violet-100 px-2 py-0.5 text-xs font-medium text-violet-700">
               Today
             </span>
           ) : null}
@@ -76,8 +76,8 @@ export default function DayCard({
       </header>
 
       <div className="mt-3 space-y-4 text-sm">
-        <section className="rounded-lg border border-emerald-100 bg-emerald-50/60 p-3">
-          <h4 className="text-xs font-semibold uppercase tracking-wide text-emerald-700">
+        <section className="rounded-lg border border-indigo-100 bg-indigo-50/60 p-3">
+          <h4 className="text-xs font-semibold uppercase tracking-wide text-indigo-700">
             Exercise
           </h4>
           <p className="mt-1 font-medium text-slate-900">{day.exerciseTitle}</p>
@@ -92,7 +92,7 @@ export default function DayCard({
                 setExerciseDone(e.target.checked);
                 void save({ exerciseDone: e.target.checked });
               }}
-              className="h-4 w-4 accent-emerald-600"
+              className="h-4 w-4 accent-indigo-600"
             />
             Completed
           </label>

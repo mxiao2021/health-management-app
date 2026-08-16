@@ -36,7 +36,7 @@ export default async function DashboardPage() {
           </span>
         </div>
         <p className="mt-2 text-slate-600">{plan.summary}</p>
-        <p className="mt-1 text-sm font-medium text-emerald-700">Focus: {plan.focus}</p>
+        <p className="mt-1 text-sm font-medium text-violet-700">Focus: {plan.focus}</p>
         <dl className="mt-4 grid grid-cols-2 gap-4 text-sm">
           <div>
             <dt className="text-slate-500">Exercise completed</dt>
