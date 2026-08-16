@@ -51,7 +51,34 @@ export async function ensurePlan(
 
   const draft = await buildPlan(profile, week, await previousWeekContext(userId, week));
 
-  if (existing) await prisma.weeklyPlan.delete({ where: { id: existing.id } });
+  // Regenerating rewrites the days in place so existing check-ins survive.
+  if (existing) {
+    return prisma.weeklyPlan.update({
+      where: { id: existing.id },
+      data: {
+        summary: draft.summary,
+        focus: draft.focus,
+        generatedBy: draft.generatedBy,
+        days: {
+          upsert: draft.days.map((day) => {
+            const content = {
+              date: addDays(week, day.dayIndex),
+              exerciseTitle: day.exerciseTitle,
+              exerciseDetail: day.exerciseDetail,
+              dietTitle: day.dietTitle,
+              dietDetail: day.dietDetail,
+            };
+            return {
+              where: { planId_dayIndex: { planId: existing.id, dayIndex: day.dayIndex } },
+              create: { dayIndex: day.dayIndex, ...content },
+              update: content,
+            };
+          }),
+        },
+      },
+      include: planInclude,
+    });
+  }
 
   return prisma.weeklyPlan.create({
     data: {

@@ -13,7 +13,8 @@ export default async function ProfilePage() {
     <div>
       <h1 className="text-2xl font-semibold text-slate-900">Your profile</h1>
       <p className="mb-6 mt-2 text-slate-600">
-        Saving refreshes this week&apos;s plan with your updated details.
+        Saving refreshes this week&apos;s plan with your updated details. Your
+        check-ins for the week are kept.
       </p>
       <ProfileForm
         submitLabel="Save and refresh this week"
