@@ -98,15 +98,15 @@ export default function DayCard({
           </label>
         </section>
 
-        <section className="rounded-lg border border-amber-100 bg-amber-50/60 p-3">
-          <h4 className="text-xs font-semibold uppercase tracking-wide text-amber-700">
+        <section className="rounded-lg border border-violet-100 bg-violet-50/60 p-3">
+          <h4 className="text-xs font-semibold uppercase tracking-wide text-violet-700">
             Diet
           </h4>
-          <div className="mt-1 divide-y divide-amber-200/70">
+          <div className="mt-1 divide-y divide-violet-200/70">
             {day.meals.map((meal) => (
               <div key={meal.key} className="py-2 first:pt-0 last:pb-0">
                 <p className="font-medium text-slate-900">
-                  <span className="text-amber-800">{meal.label}</span> · {meal.title}
+                  <span className="text-violet-800">{meal.label}</span> · {meal.title}
                 </p>
                 <p className="text-slate-600">{meal.detail}</p>
                 <label className="mt-2 inline-flex items-center gap-2 text-slate-700">
@@ -120,7 +120,7 @@ export default function DayCard({
                       setMeals((prev) => ({ ...prev, [meal.key]: done }));
                       void save({ [`${meal.key}Done`]: done });
                     }}
-                    className="h-4 w-4 accent-amber-600"
+                    className="h-4 w-4 accent-violet-600"
                   />
                   Followed
                 </label>

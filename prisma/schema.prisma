@@ -43,8 +43,9 @@ model WeeklyPlan {
   generatedBy String
   createdAt   DateTime @default(now())
 
-  user User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  days PlanDay[]
+  user     User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  days     PlanDay[]
+  feedback PlanFeedback[]
 
   @@unique([userId, weekStart])
 }
@@ -67,6 +68,19 @@ model PlanDay {
   checkIn CheckIn?
 
   @@unique([planId, dayIndex])
+}
+
+/// A free-text adjustment request the user wrote about a week's plan, e.g.
+/// "I only want to play tennis on Friday, Saturday, Sunday".
+model PlanFeedback {
+  id        String   @id @default(cuid())
+  planId    String
+  message   String
+  createdAt DateTime @default(now())
+
+  plan WeeklyPlan @relation(fields: [planId], references: [id], onDelete: Cascade)
+
+  @@index([planId])
 }
 
 model CheckIn {

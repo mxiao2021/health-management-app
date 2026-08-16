@@ -6,6 +6,7 @@ import { adherence } from "@/lib/review";
 import { dayIndexOf, formatDate, isSunday, weekStart } from "@/lib/week";
 import { toDayCardData } from "@/lib/dayCard";
 import DayCard from "@/components/DayCard";
+import PlanFeedbackPanel from "@/components/PlanFeedbackPanel";
 import ReviewPanel from "@/components/ReviewPanel";
 
 export const dynamic = "force-dynamic";
@@ -61,6 +62,11 @@ export default async function DashboardPage() {
           />
         ))}
       </section>
+
+      <PlanFeedbackPanel
+        weekStart={formatDate(plan.weekStart)}
+        requests={plan.feedback.map((f) => f.message)}
+      />
 
       <section className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
         <h2 className="text-lg font-semibold text-slate-900">Weekly review</h2>

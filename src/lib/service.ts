@@ -5,6 +5,7 @@ import { addDays, weekStart } from "@/lib/week";
 
 const planInclude = {
   days: { include: { checkIn: true }, orderBy: { dayIndex: "asc" } },
+  feedback: { orderBy: { createdAt: "asc" } },
 } as const;
 
 export async function getPlan(
@@ -34,6 +35,7 @@ async function previousWeekContext(
     dietAdherence: rates.diet,
     reviewSummary: review?.summary,
     adjustments: review?.adjustments,
+    requests: previous.feedback.map((f) => f.message),
   };
 }
 
@@ -49,7 +51,12 @@ export async function ensurePlan(
   const profile = await prisma.profile.findUnique({ where: { userId } });
   if (!profile) throw new Error("PROFILE_REQUIRED");
 
-  const draft = await buildPlan(profile, week, await previousWeekContext(userId, week));
+  const draft = await buildPlan(
+    profile,
+    week,
+    await previousWeekContext(userId, week),
+    existing?.feedback.map((f) => f.message) ?? [],
+  );
 
   // Regenerating rewrites the days in place so existing check-ins survive.
   if (existing) {
@@ -147,6 +154,22 @@ export async function ensureReview(
   await ensurePlan(userId, addDays(week, 7), { regenerate: options.regenerate });
 
   return review;
+}
+
+/**
+ * Records a free-text adjustment request for a week and rebuilds that week's
+ * plan around it. Check-ins survive because the days are rewritten in place.
+ */
+export async function applyPlanFeedback(
+  userId: string,
+  week: Date,
+  message: string,
+): Promise<PlanWithDays> {
+  const plan = await getPlan(userId, week);
+  if (!plan) throw new Error("PLAN_REQUIRED");
+
+  await prisma.planFeedback.create({ data: { planId: plan.id, message } });
+  return ensurePlan(userId, week, { regenerate: true });
 }
 
 export async function listWeeks(userId: string) {

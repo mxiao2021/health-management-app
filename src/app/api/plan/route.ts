@@ -1,12 +1,13 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { getCurrentUser } from "@/lib/session";
-import { ensurePlan } from "@/lib/service";
+import { applyPlanFeedback, ensurePlan } from "@/lib/service";
 import { weekStart } from "@/lib/week";
 
 const schema = z.object({
   weekStart: z.string().optional(),
   regenerate: z.boolean().optional(),
+  feedback: z.string().trim().min(1).max(1000).optional(),
 });
 
 export const maxDuration = 300;
@@ -25,13 +26,16 @@ export async function POST(request: Request) {
   );
 
   try {
-    const plan = await ensurePlan(user.id, week, {
-      regenerate: parsed.data.regenerate,
-    });
+    const plan = parsed.data.feedback
+      ? await applyPlanFeedback(user.id, week, parsed.data.feedback)
+      : await ensurePlan(user.id, week, { regenerate: parsed.data.regenerate });
     return NextResponse.json({ planId: plan.id, generatedBy: plan.generatedBy });
   } catch (error) {
     if (error instanceof Error && error.message === "PROFILE_REQUIRED") {
       return NextResponse.json({ error: "Complete your profile first" }, { status: 400 });
+    }
+    if (error instanceof Error && error.message === "PLAN_REQUIRED") {
+      return NextResponse.json({ error: "No plan for that week yet" }, { status: 400 });
     }
     throw error;
   }

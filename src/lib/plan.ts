@@ -30,6 +30,7 @@ export type PreviousWeekContext = {
   dietAdherence: number;
   reviewSummary?: string;
   adjustments?: string;
+  requests?: string[];
 };
 
 function bmi(profile: Profile): number {
@@ -164,12 +165,14 @@ Include exactly 7 days, dayIndex 0 = Monday through 6 = Sunday. Every day must h
 Titles under 40 characters and name the dish. Details 1-2 sentences and concrete (sets, reps, durations, foods, portions).
 Vary the meals across the week and keep them realistic to cook.
 Respect the user's stated medical conditions, scale intensity to their current habits and age, and include at least one rest or recovery day.
+When the user has written adjustment requests, follow them literally unless they are unsafe; if a request cannot be met safely, honour it as closely as possible and explain the compromise in the summary.
 Never diagnose, never prescribe medication, and add safety caveats inside the detail text when relevant.`;
 
 function profilePrompt(
   profile: Profile,
   weekStartDate: Date,
   previous?: PreviousWeekContext,
+  requests: string[] = [],
 ): string {
   const lines = [
     `Week starting: ${formatDate(weekStartDate)} (Monday).`,
@@ -185,6 +188,16 @@ function profilePrompt(
     );
     if (previous.reviewSummary) lines.push(`Last week's review: ${previous.reviewSummary}`);
     if (previous.adjustments) lines.push(`Planned adjustments: ${previous.adjustments}`);
+    if (previous.requests?.length) {
+      lines.push(
+        `Standing preferences the user asked for previously:\n${previous.requests.map((r) => `- ${r}`).join("\n")}`,
+      );
+    }
+  }
+  if (requests.length) {
+    lines.push(
+      `The user's adjustment requests for this week (most recent last) — these take priority:\n${requests.map((r) => `- ${r}`).join("\n")}`,
+    );
   }
   return lines.join("\n");
 }
@@ -213,10 +226,11 @@ export async function buildPlan(
   profile: Profile,
   weekStartDate: Date,
   previous?: PreviousWeekContext,
+  requests: string[] = [],
 ): Promise<PlanDraft> {
   const draft = await generateJson<unknown>(
     SYSTEM_PROMPT,
-    profilePrompt(profile, weekStartDate, previous),
+    profilePrompt(profile, weekStartDate, previous, requests),
   );
   if (isValidDraft(draft)) {
     return {

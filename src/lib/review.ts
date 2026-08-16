@@ -1,10 +1,11 @@
-import type { CheckIn, PlanDay, Profile, WeeklyPlan } from "@prisma/client";
+import type { CheckIn, PlanDay, PlanFeedback, Profile, WeeklyPlan } from "@prisma/client";
 import { generateJson } from "@/lib/llm";
 import { MEALS } from "@/lib/plan";
 import { DAY_NAMES, formatDate } from "@/lib/week";
 
 export type PlanWithDays = WeeklyPlan & {
   days: Array<PlanDay & { checkIn: CheckIn | null }>;
+  feedback: PlanFeedback[];
 };
 
 export type ReviewDraft = {
