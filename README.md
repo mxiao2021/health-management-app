@@ -8,7 +8,7 @@ one. Everything is stored in a database so past weeks stay browsable.
 ## Stack
 
 - Next.js (App Router) + TypeScript + Tailwind CSS
-- Prisma + SQLite
+- Prisma + Postgres (Supabase in production)
 - Anthropic Claude for plan and review generation, with a deterministic
   rule-based fallback when no API key is set
 
@@ -16,8 +16,8 @@ one. Everything is stored in a database so past weeks stay browsable.
 
 ```bash
 npm install
-cp .env.example .env      # set ANTHROPIC_API_KEY to enable AI plans
-npx prisma migrate dev
+cp .env.example .env      # set DATABASE_URL/DIRECT_URL and ANTHROPIC_API_KEY
+npx prisma migrate deploy
 npm run dev               # http://localhost:3000
 ```
 
@@ -51,6 +51,20 @@ curl -X POST https://your-app/api/cron/weekly-review \
 ```
 
 Users can also run the review from the dashboard at any time.
+
+## Deployment (Vercel + Supabase)
+
+Set these environment variables on the Vercel project:
+
+| Variable | Value |
+| --- | --- |
+| `DATABASE_URL` | Supabase transaction pooler URI (port 6543, `?pgbouncer=true&connection_limit=1`) |
+| `DIRECT_URL` | Supabase direct/session URI (port 5432), used by `prisma migrate deploy` |
+| `ANTHROPIC_API_KEY` | enables AI plans and reviews |
+| `CRON_SECRET` | protects the weekly cron endpoint |
+
+`npm run build` runs `prisma migrate deploy` first, so schema changes are applied
+on every deployment. `vercel.json` schedules the Sunday review cron.
 
 ## Checks
 

@@ -9,6 +9,8 @@ const schema = z.object({
   regenerate: z.boolean().optional(),
 });
 
+export const maxDuration = 300;
+
 export async function POST(request: Request) {
   const user = await getCurrentUser();
   if (!user) return NextResponse.json({ error: "Not signed in" }, { status: 401 });

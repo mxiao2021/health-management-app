@@ -7,7 +7,9 @@ import { weekStart } from "@/lib/week";
  * Runs the weekly review for every user with a plan for the finishing week and
  * builds their next week. Intended to be called by a scheduler each Sunday.
  */
-export async function POST(request: Request) {
+export const maxDuration = 300;
+
+async function runWeeklyReview(request: Request) {
   const secret = process.env.CRON_SECRET;
   if (!secret || request.headers.get("authorization") !== `Bearer ${secret}`) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -37,3 +39,8 @@ export async function POST(request: Request) {
     failed: results.filter((r) => !r.ok).length,
   });
 }
+
+export const POST = runWeeklyReview;
+
+// Vercel Cron invokes scheduled jobs with GET and the CRON_SECRET bearer token.
+export const GET = runWeeklyReview;
