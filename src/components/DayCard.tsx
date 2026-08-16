@@ -75,11 +75,14 @@ export default function DayCard({
         <span className="text-xs text-slate-400">{day.date}</span>
       </header>
 
-      <div className="mt-3 space-y-3 text-sm">
-        <div>
-          <p className="font-medium text-slate-800">Exercise · {day.exerciseTitle}</p>
+      <div className="mt-3 space-y-4 text-sm">
+        <section className="rounded-lg border border-emerald-100 bg-emerald-50/60 p-3">
+          <h4 className="text-xs font-semibold uppercase tracking-wide text-emerald-700">
+            Exercise
+          </h4>
+          <p className="mt-1 font-medium text-slate-900">{day.exerciseTitle}</p>
           <p className="text-slate-600">{day.exerciseDetail}</p>
-          <label className="mt-1 inline-flex items-center gap-2 text-slate-700">
+          <label className="mt-2 inline-flex items-center gap-2 text-slate-700">
             <input
               type="checkbox"
               aria-label={`${day.dayName} exercise complete`}
@@ -89,35 +92,42 @@ export default function DayCard({
                 setExerciseDone(e.target.checked);
                 void save({ exerciseDone: e.target.checked });
               }}
-              className="h-4 w-4"
+              className="h-4 w-4 accent-emerald-600"
             />
             Completed
           </label>
-        </div>
+        </section>
 
-        {day.meals.map((meal) => (
-          <div key={meal.key}>
-            <p className="font-medium text-slate-800">
-              {meal.label} · {meal.title}
-            </p>
-            <p className="text-slate-600">{meal.detail}</p>
-            <label className="mt-1 inline-flex items-center gap-2 text-slate-700">
-              <input
-                type="checkbox"
-                aria-label={`${day.dayName} ${meal.label.toLowerCase()} complete`}
-                checked={meals[meal.key]}
-                disabled={readOnly}
-                onChange={(e) => {
-                  const done = e.target.checked;
-                  setMeals((prev) => ({ ...prev, [meal.key]: done }));
-                  void save({ [`${meal.key}Done`]: done });
-                }}
-                className="h-4 w-4"
-              />
-              Followed
-            </label>
+        <section className="rounded-lg border border-amber-100 bg-amber-50/60 p-3">
+          <h4 className="text-xs font-semibold uppercase tracking-wide text-amber-700">
+            Diet
+          </h4>
+          <div className="mt-1 divide-y divide-amber-200/70">
+            {day.meals.map((meal) => (
+              <div key={meal.key} className="py-2 first:pt-0 last:pb-0">
+                <p className="font-medium text-slate-900">
+                  <span className="text-amber-800">{meal.label}</span> · {meal.title}
+                </p>
+                <p className="text-slate-600">{meal.detail}</p>
+                <label className="mt-2 inline-flex items-center gap-2 text-slate-700">
+                  <input
+                    type="checkbox"
+                    aria-label={`${day.dayName} ${meal.label.toLowerCase()} complete`}
+                    checked={meals[meal.key]}
+                    disabled={readOnly}
+                    onChange={(e) => {
+                      const done = e.target.checked;
+                      setMeals((prev) => ({ ...prev, [meal.key]: done }));
+                      void save({ [`${meal.key}Done`]: done });
+                    }}
+                    className="h-4 w-4 accent-amber-600"
+                  />
+                  Followed
+                </label>
+              </div>
+            ))}
           </div>
-        ))}
+        </section>
 
         {readOnly ? (
           note ? <p className="text-slate-500">Note: {note}</p> : null
